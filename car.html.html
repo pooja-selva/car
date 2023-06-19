@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Car Race</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="myCanvas" width="1200" height="800"></canvas>
+  <button onclick="startRace()">Start Race</button>
+
+  <script>
+    class Car {
+      constructor(number) {
+        this.number = number;
+        this.x = canvas.width - carWidth;
+        this.y = carSpacing + (carHeight + carSpacing) * number;
+        this.speed = Math.floor(Math.random() * 6) + 1;
+        this.color = getRandomColor();
+      }
+
+      draw() {
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.x, this.y, carWidth, carHeight);
+
+        const windowColor = getRandomColor();
+        ctx.fillStyle = windowColor;
+        ctx.fillRect(this.x + 10, this.y + 10, 30, 30);
+        ctx.fillRect(this.x + 60, this.y + 10, 30, 30);
+
+        ctx.fillStyle = 'black';
+        ctx.font = '12px Arial';
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'white';
+        ctx.strokeText('Car ' + this.number, this.x + 10, this.y + 70);
+        ctx.fillText('Car ' + this.number, this.x + 10, this.y + 70);
+
+        ctx.fillStyle = 'blue';
+          ctx.beginPath();
+          ctx.arc(this.x + 30, this.y + 85, 6, 0, 7 * Math.PI);
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.arc(this.x + 80, this.y + 85, 6, 0, 7 * Math.PI);
+          ctx.fill();
+      }
+
+      update() {
+        if (raceStarted) {
+          this.x -= this.speed;
+          if (this.x <= 0) {
+            raceStarted = false;
+            alert('Car ' + this.number + ' is the winner!');
+          }
+        }
+        this.draw();
+      }
+    }
+
+    const canvas = document.getElementById('myCanvas');
+    const ctx = canvas.getContext('2d');
+    const carWidth = 100;
+    const carHeight = 50;
+    const carSpacing = 50;
+    const cars = [];
+    let raceStarted = false;
+
+    function startRace() {
+      if (!raceStarted) {
+        raceStarted = true;
+        cars.forEach(car => {
+          car.speed = Math.floor(Math.random() * 6) + 1;
+        });
+      }
+    }
+
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    function init() {
+      for (let i = 0; i < 4; i++) {
+        cars.push(new Car(i + 1));
+      }
+      setInterval(updateCanvas, 20);
+    }
+
+    function updateCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      cars.forEach(car => {
+        car.update();
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
